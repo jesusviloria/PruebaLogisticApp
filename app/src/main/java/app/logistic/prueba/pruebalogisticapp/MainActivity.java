@@ -67,7 +67,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
 
     private TextView txtFecha, txtCiudad, txtGrados, txtWindSpeed, txtHumidity, txtDirection;
@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        alert=null;
         queue = Volley.newRequestQueue(this);
         adapter = new AdapterDays(listDays);
 
@@ -161,14 +162,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        listDays.clear();
         GetLocation();
-
 
 
         swipeUpdate.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+                alert=null;
 
                 if (isOnline(MainActivity.this)) {
 
@@ -195,6 +196,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                alert=null;
 
                 if (isOnline(MainActivity.this)) {
 
@@ -229,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
             AlertaNoGPS();
-
+            Log.i("Solicitud de ", "activar ubicacion");
             LimpiarCampos();
 
             return ;
@@ -277,7 +280,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                   btnRefresh.setVisibility(View.VISIBLE);
                   progressCarga.setVisibility(View.INVISIBLE);
                   imgDisponibilidad.setImageResource(R.drawable.no_disponible);
-                  AlertaNoGPS();
+                  if(alert!=null) {
+                  }else{
+                      AlertaNoGPS();
+                  }
+                  Log.i("Solicitud de ", "activar ubicacion");
                   LimpiarCampos();
 
           }
@@ -303,7 +310,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             String direccion = parts[0];
             txtCiudad.setText(direccion);
 
-            mTitle.setText(addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea());
+            if(addresses.get(0).getLocality()!=null && addresses.get(0).getAdminArea()!=null){
+                mTitle.setText(addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea());
+            }else if(addresses.get(0).getLocality()!=null){
+                mTitle.setText(addresses.get(0).getLocality());
+            }else if(addresses.get(0).getAdminArea()!=null){
+                mTitle.setText(addresses.get(0).getAdminArea());
+            }else{
+
+            }
         }
 
         String urlfinal = url + lat + "," + lon;
@@ -388,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         JSONObject diario = objetoJSON.getJSONObject("daily");
                         JSONArray data = diario.getJSONArray("data");
 
+                        listDays.clear();
                         for (int i = 0; i <= 4; i++) {
 
                             JSONObject objeto = data.getJSONObject(i);
@@ -493,6 +509,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+
                     }
                 })
                 .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -501,16 +519,80 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
                 });
 
-        alert = builder.create();
-        if(alert.isShowing()){
+        if(alert!=null) {
 
-        }else{
+        }else {
+            alert = builder.create();
             alert.show();
         }
+
+
 
     }
 
 
+
+    protected void onResume(){
+        super.onResume();
+        GetLocation();
+    }
+
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        //GetLocation();
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+        //GetLocation();
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+       // Toast.makeText(getApplicationContext(), "Ubicación activada", Toast.LENGTH_SHORT).show();
+
+
+     /*   Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (isOnline(MainActivity.this)) {
+
+                    btnRefresh.setVisibility(View.GONE);
+                    progressCarga.setVisibility(View.VISIBLE);
+                    listDays.clear();
+                    GetLocation();
+
+
+                }else{
+                    LimpiarCampos();
+                    listDays.clear();
+                    btnRefresh.setVisibility(View.VISIBLE);
+                    progressCarga.setVisibility(View.INVISIBLE);
+                    imgDisponibilidad.setImageResource(R.drawable.no_disponible);
+                    Toast.makeText(getApplicationContext(), R.string.internet_problems, Toast.LENGTH_SHORT).show();
+
+                }
+
+
+
+            }
+        }, 500); */
+
+
+
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
 }
 
 
