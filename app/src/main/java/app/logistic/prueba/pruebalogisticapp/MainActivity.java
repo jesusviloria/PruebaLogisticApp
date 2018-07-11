@@ -526,11 +526,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             alert.show();
         }
 
-
-
     }
-
-
 
     protected void onResume(){
         super.onResume();
@@ -541,51 +537,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
-        //GetLocation();
+
 
     }
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
-        //GetLocation();
+
     }
 
     @Override
     public void onProviderEnabled(String s) {
-
-       // Toast.makeText(getApplicationContext(), "Ubicación activada", Toast.LENGTH_SHORT).show();
-
-
-     /*   Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if (isOnline(MainActivity.this)) {
-
-                    btnRefresh.setVisibility(View.GONE);
-                    progressCarga.setVisibility(View.VISIBLE);
-                    listDays.clear();
-                    GetLocation();
-
-
-                }else{
-                    LimpiarCampos();
-                    listDays.clear();
-                    btnRefresh.setVisibility(View.VISIBLE);
-                    progressCarga.setVisibility(View.INVISIBLE);
-                    imgDisponibilidad.setImageResource(R.drawable.no_disponible);
-                    Toast.makeText(getApplicationContext(), R.string.internet_problems, Toast.LENGTH_SHORT).show();
-
-                }
-
-
-
-            }
-        }, 500); */
-
-
-
 
     }
 
