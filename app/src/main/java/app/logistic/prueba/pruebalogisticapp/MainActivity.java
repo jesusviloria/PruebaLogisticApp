@@ -146,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d");
         String currentDateandTime = sdf.format(new Date());
 
+
+
         txtFecha.setText(day.toUpperCase() + ", " + currentDateandTime.toUpperCase());
 
         if (mGoogleApiClient == null) {
@@ -161,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+
 
         GetLocation();
 
@@ -227,68 +230,74 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void GetLocation(){
 
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-            AlertaNoGPS();
-            Log.i("Solicitud de ", "activar ubicacion");
-            LimpiarCampos();
-
-            return ;
-
-        }else{
-
-          if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-              mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                      mGoogleApiClient);
-
-                   if (mLastLocation != null) {
-                      latitudeactual = mLastLocation.getLatitude();
-                      longitudactual = mLastLocation.getLongitude();
-
-                      if(isOnline(MainActivity.this)){
-                          CargarDatos();
-                      }else{
-
-                          final Toast toast = Toast.makeText(getApplicationContext(), R.string.internet_problems, Toast.LENGTH_SHORT);
-                          toast.show();
-
-                          Handler handler = new Handler();
-                          handler.postDelayed(new Runnable() {
-                              @Override
-                              public void run() {
-                                  toast.cancel();
-                              }
-                          }, 500);
-
-                      }
 
 
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
 
-                  } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
-                      btnRefresh.setVisibility(View.VISIBLE);
-                      progressCarga.setVisibility(View.INVISIBLE);
-                      imgDisponibilidad.setImageResource(R.drawable.no_disponible);
+                LimpiarCampos();
 
-                  }
+                return ;
 
-          }else{
+            }else{
 
-                  btnRefresh.setVisibility(View.VISIBLE);
-                  progressCarga.setVisibility(View.INVISIBLE);
-                  imgDisponibilidad.setImageResource(R.drawable.no_disponible);
-                  if(alert!=null) {
-                  }else{
-                      AlertaNoGPS();
-                  }
-                  Log.i("Solicitud de ", "activar ubicacion");
-                  LimpiarCampos();
+                if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-          }
-        }
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                            mGoogleApiClient);
+
+                    if (mLastLocation != null) {
+                        latitudeactual = mLastLocation.getLatitude();
+                        longitudactual = mLastLocation.getLongitude();
+
+                        if(isOnline(MainActivity.this)){
+                            CargarDatos();
+                        }else{
+
+                            final Toast toast = Toast.makeText(getApplicationContext(), R.string.internet_problems, Toast.LENGTH_SHORT);
+                            toast.show();
+
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    toast.cancel();
+                                }
+                            }, 500);
+
+                        }
+
+
+
+                    } else {
+
+                        btnRefresh.setVisibility(View.VISIBLE);
+                        progressCarga.setVisibility(View.INVISIBLE);
+                        imgDisponibilidad.setImageResource(R.drawable.no_disponible);
+
+                    }
+
+                }else{
+
+                    btnRefresh.setVisibility(View.VISIBLE);
+                    progressCarga.setVisibility(View.INVISIBLE);
+                    imgDisponibilidad.setImageResource(R.drawable.no_disponible);
+                    if(alert!=null) {
+
+                    }else{
+                        AlertaNoGPS();
+                    }
+                    Log.i("Solicitud de ", "activar ubicacion");
+                    LimpiarCampos();
+
+                }
+            }
+
+
+
+
+
     }
 
     public void CargarDatos(){
